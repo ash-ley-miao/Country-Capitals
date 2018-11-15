@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Capital Game!</title>
+    <link href="https://fonts.googleapis.com/css?family=Krub:400,600,700" rel="stylesheet">
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="jquery/css/ui-lightness/jquery-ui-1.10.0.custom.css" rel="stylesheet" />
+    <link href="./capital_game.css" rel="stylesheet" />
+  </head>
+  <body>
+      <div class="title-table">
+          <h1>Do you know the capital of this country?</h1>
+            <table id="game-table">
+              <tbody id="column-labels">
+                <tr>
+                  <th>Country</th>
+                  <th>Capital</th>
+                  <th>Answer</th>
+                </tr>
+                <tr>
+                  <td id="pr2__question"></td>
+                  <td><input id="pr2__answer"></td>
+                  <td><button id="pr2__submit">See Answer</button></td>
+                </tr>
+                <tr>
+                  <td colspan="3">
+                    <input type="radio" name="filter" id="all" value="" checked>All
+                    <input type="radio" name="filter" id="correct">Correct
+                    <input type="radio" name="filter" id="wrong">Wrong
+                  </td>                
+                </tr>
+                <tr>
+                    <td colspan="3"><button id="pr3__clear">Clear</button></td>
+                </tr>           
+              </tbody>
+            </table>
+      </div>
+    <script src="jquery/js/jquery-1.9.0.min.js"></script>
+    <script src="jquery/js/jquery-ui-1.10.0.custom.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.6.2/firebase.js"></script>
+    <script src="./country_capital_pairs.js"></script>
+    <script src="./capital_game.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.5.8/firebase.js"></script>
+    <script>
+      var config = {
+        apiKey: "AIzaSyANnCznAph5-28TdiVe9wJpaAkzC65O6o8",
+        authDomain: "capital-game-cs188.firebaseapp.com",
+        databaseURL: "https://capital-game-cs188.firebaseio.com",
+        projectId: "capital-game-cs188",
+        storageBucket: "capital-game-cs188.appspot.com",
+        messagingSenderId: "872783418053"
+      };
+      firebase.initializeApp(config);
+      database = firebase.database();
+    </script>
+  </body>
+</html>

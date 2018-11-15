@@ -1,0 +1,41 @@
+body {
+    background-color: #eee;
+    display: flex;
+    justify-content: center;
+}
+
+h1 {
+    font-weight: 700;
+    font-family: 'Krub', sans-serif;
+}
+
+.correct-entry {
+    color: blue;
+}
+
+.incorrect-entry {
+    color: red;
+}
+
+table {
+    text-align: left;
+    border-spacing: 0;
+}
+
+th, td {
+    font-family: 'Krub';
+    font-weight: 500;
+    border-bottom: 1px solid silver;
+    padding: 5px;
+}
+
+th {
+    font-weight: 700;
+    border-bottom: 1px solid black;
+}
+
+.title-table {
+    margin: 0 auto;
+    display: inline-block;
+    justify-content: center;
+}
