@@ -1,4 +1,5 @@
 var database;
+var data;
 
 $( document ).ready(function() {
   var country_capital_pairs = pairs
@@ -15,7 +16,6 @@ $( document ).ready(function() {
     newCountry(country_number);
     checkFilters();
   }
-
 });
 
 //Enter keypress
@@ -58,7 +58,6 @@ $(function() {
     var ithCapital = pairs[i].capital;
     country_capitals.push(ithCapital);
   }
-
   var normalize = function( term ) {
     var ret = "";
     for (var i = 0; i < term.length; i++) {
@@ -66,7 +65,6 @@ $(function() {
     }
     return ret;
   };
-
   $("#pr2__answer").autocomplete({
     source: function( request, response ) {
       var matcher = new RegExp( $.ui.autocomplete.escapeRegex( request.term ), "i" ); 
@@ -80,36 +78,62 @@ $(function() {
 
 //Add entry to table and store in Firebase
 function addEntry(number) {
-  var table = document.getElementById("game-table");
-
-  var row = table.insertRow(4);
-  var country = row.insertCell(0);
-  var playerAnswer = row.insertCell(1);
-  var answerResult = row.insertCell(2);
-
+  var correctAnswer = false;
+  var correctCapital = pairs[number].capital;
   var promptCountry = pairs[number].country;
-  country.innerHTML = promptCountry;
-
   var playerInput = document.getElementById("pr2__answer").value;
-  playerAnswer.innerHTML = playerInput;
-
+  
   if (playerInput == pairs[number].capital) {
-    row.className += "correct-entry";
-    answerResult.innerHTML = '<i class="fa fa-check"></i> <input type="button" value="Delete">';
-  }
-  else {
-    row.className += "incorrect-entry";
-    answerResult.innerHTML = pairs[number].capital + '<input type="button" value="Delete">';
+     correctAnswer = true;
   }
   
-  var data = {
+  data = {
     country: promptCountry,
-    capital: playerInput,
+    inputCapital: playerInput,
+    isCorrect: correctAnswer,
+    correctCapital: correctCapital,
   }
-  console.log(data);
+
   var ref = database.ref('player-answers');
   ref.push(data);
-  document.getElementById("pr2__answer").value = "";
+  ref.on('value', gotData);
+  document.getElementById("pr2__answer").value = ""; //Clear pr2__answer
+}
+
+function gotData(data) {
+  var entries = data.val();
+  var keys = Object.keys(entries);
+  var table = document.getElementById("game-table");
+  
+  var listings = document.getElementsByClassName('listings');
+  console.log(listings);
+  for (var i = 0; i < listings.length; i++) {
+    listings[i].remove();
+  }
+
+  for (var i = 0; i < keys.length; i++) {
+    var k = keys[i];
+    var countryRef = entries[k].country;
+    var capitalRef = entries[k].inputCapital;
+    var isCorrectRef = entries[k].isCorrect;
+    var correctCapital = entries[k].correctCapital;
+
+    var row = table.insertRow(4);
+    var country = row.insertCell(0);
+    var playerAnswer = row.insertCell(1);
+    var answerResult = row.insertCell(2);
+    country.innerHTML = countryRef;
+    playerAnswer.innerHTML = capitalRef;
+
+    if (isCorrectRef) {
+      row.className += "correct-entry listings";
+      answerResult.innerHTML = '<i class="fa fa-check"></i> <input type="button" value="Delete">';
+    }
+    else {
+      row.className += "incorrect-entry listings";
+      answerResult.innerHTML = correctCapital + '<input type="button" value="Delete">';
+    }
+  }
 }
 
 //Removing a row in the table
