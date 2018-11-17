@@ -17,6 +17,13 @@ $( document ).ready(function() {
     newCountry(country_number);
     checkFilters();
   }
+  document.getElementById("pr3__clear").onclick = function() {
+    firebase.database().ref('player-answers').remove();
+    var listings = document.getElementsByClassName('listings');
+    while (listings[0]) {
+      listings[0].parentNode.removeChild(listings[0]);
+    }
+  }
 });
 
 //Enter keypress
