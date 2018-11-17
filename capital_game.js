@@ -1,8 +1,8 @@
 var database;
 var data;
+var pairs;
 
 $( document ).ready(function() {
-  var country_capital_pairs = pairs
   var database = firebase.database();
   $.ajax({
         type: "GET",
@@ -11,6 +11,7 @@ $( document ).ready(function() {
         success: function(data) {processData(data);}
   });
   window.onload = newCountry();
+  window.onload = getHistory();
   document.getElementById("pr2__submit").onclick = function() {
     addEntry(country_number[0]);
     newCountry(country_number);
@@ -82,58 +83,66 @@ function addEntry(number) {
   var correctCapital = pairs[number].capital;
   var promptCountry = pairs[number].country;
   var playerInput = document.getElementById("pr2__answer").value;
-  
   if (playerInput == pairs[number].capital) {
      correctAnswer = true;
   }
-  
   data = {
     country: promptCountry,
     inputCapital: playerInput,
     isCorrect: correctAnswer,
     correctCapital: correctCapital,
   }
-
   var ref = database.ref('player-answers');
   ref.push(data);
-  ref.on('value', gotData);
+
+  var table = document.getElementById("game-table");
+  var row = table.insertRow(4);
+  var country = row.insertCell(0);
+  var playerAnswer = row.insertCell(1);
+  var answerResult = row.insertCell(2);
+  country.innerHTML = promptCountry;
+  playerAnswer.innerHTML = playerInput;
+  if (correctAnswer) {
+    row.className += "correct-entry listings";
+    answerResult.innerHTML = '<i class="fa fa-check"></i> <input type="button" value="Delete">';
+  }
+  else {
+    row.className += "incorrect-entry listings";
+    answerResult.innerHTML = correctCapital + '<input type="button" value="Delete">';
+  }
+
   document.getElementById("pr2__answer").value = ""; //Clear pr2__answer
 }
 
-function gotData(data) {
-  var entries = data.val();
-  var keys = Object.keys(entries);
+function getHistory() {
   var table = document.getElementById("game-table");
-  
-  var listings = document.getElementsByClassName('listings');
-  console.log(listings);
-  for (var i = 0; i < listings.length; i++) {
-    listings[i].remove();
-  }
+  var leadsRef = database.ref('player-answers');
+  leadsRef.once('value', function(snapshot) {
+      snapshot.forEach(function(childSnapshot) {
+        var childData = childSnapshot.val();
+        var countryRef = childData.country;
+        var capitalRef = childData.inputCapital;
+        var isCorrectRef = childData.isCorrect;
+        var correctCapital = childData.correctCapital;
+        console.log(childData, countryRef, capitalRef, isCorrectRef, correctCapital);
 
-  for (var i = 0; i < keys.length; i++) {
-    var k = keys[i];
-    var countryRef = entries[k].country;
-    var capitalRef = entries[k].inputCapital;
-    var isCorrectRef = entries[k].isCorrect;
-    var correctCapital = entries[k].correctCapital;
+        var row = table.insertRow(4);
+        var country = row.insertCell(0);
+        var playerAnswer = row.insertCell(1);
+        var answerResult = row.insertCell(2);
+        country.innerHTML = countryRef;
+        playerAnswer.innerHTML = capitalRef;
 
-    var row = table.insertRow(4);
-    var country = row.insertCell(0);
-    var playerAnswer = row.insertCell(1);
-    var answerResult = row.insertCell(2);
-    country.innerHTML = countryRef;
-    playerAnswer.innerHTML = capitalRef;
-
-    if (isCorrectRef) {
-      row.className += "correct-entry listings";
-      answerResult.innerHTML = '<i class="fa fa-check"></i> <input type="button" value="Delete">';
-    }
-    else {
-      row.className += "incorrect-entry listings";
-      answerResult.innerHTML = correctCapital + '<input type="button" value="Delete">';
-    }
-  }
+        if (isCorrectRef) {
+          row.className += "correct-entry listings";
+          answerResult.innerHTML = '<i class="fa fa-check"></i> <input type="button" value="Delete">';
+        }
+        else {
+          row.className += "incorrect-entry listings";
+          answerResult.innerHTML = correctCapital + '<input type="button" value="Delete">';
+        }
+      });
+  });
 }
 
 //Removing a row in the table
